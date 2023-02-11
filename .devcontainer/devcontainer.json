@@ -1,19 +1,13 @@
 {
   "name": "Node Devcontainer",
-  "dockerComposeFile": [
-    "../docker-compose.yml",
-    "docker-compose.yml"
-  ],
+  "dockerComposeFile": ["../docker-compose.yml", "docker-compose.yml"],
   "service": "node",
   "workspaceFolder": "/workspace",
   "remoteUser": "node",
+  "features": { "ghcr.io/warrenbuckley/codespace-features/sqlite:1": {} },
   "customizations": {
     "vscode": {
-      "extensions": [
-        "dbaeumer.vscode-eslint",
-        "esbenp.prettier-vscode",
-        "VisualStudioExptTeam.vscodeintellicode",
-      ]
+      "extensions": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode", "VisualStudioExptTeam.vscodeintellicode"]
     }
   },
   "postStartCommand": "npm install"

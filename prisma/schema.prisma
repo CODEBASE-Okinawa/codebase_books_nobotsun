@@ -1,0 +1,64 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String        @id @default(cuid())
+  name         String
+  email        String
+  password     String
+  admin        Boolean
+  createdAt    DateTime      @default(now()) @map(name: "created_at")
+  updatedAt    DateTime      @updatedAt @map(name: "updated_at")
+  lendings     Lending[]
+  reservetions Reservetion[]
+
+  @@map("users")
+}
+
+// 本の情報
+model Book {
+  id           String        @id @default(cuid())
+  title        String
+  imageUrl     String        @map(name: "image_url")
+  createdAt    DateTime      @default(now()) @map(name: "created_at")
+  updatedAt    DateTime      @updatedAt @map(name: "updated_at")
+  lendings     Lending[]
+  reservetions Reservetion[]
+
+  @@map("books")
+}
+
+// 貸出管理系
+model Lending {
+  id        String   @id @default(cuid())
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?  @map("user_id")
+  book      Book?    @relation(fields: [bookId], references: [id])
+  bookId    String?  @map("book_id")
+  expiredAt DateTime @map(name: "expired_at")
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
+
+  @@map("lendings")
+}
+
+// 予約管理系
+model Reservetion {
+  id          String   @id @default(cuid())
+  user        User?    @relation(fields: [userId], references: [id])
+  userId      String?  @map("user_id")
+  book        Book?    @relation(fields: [bookId], references: [id])
+  bookId      String?  @map("book_id")
+  lendStartAt DateTime @map(name: "lend_start_at")
+  lendEndAt   DateTime @map(name: "lend_end_at")
+  createdAt   DateTime @default(now()) @map(name: "created_at")
+  updatedAt   DateTime @updatedAt @map(name: "updated_at")
+
+  @@map("reservetions")
+}
