@@ -1,30 +1,60 @@
-import { FC } from 'react'
-import AppBar from '@mui/material/AppBar'
-import Box from '@mui/material/Box'
+import { FC, Dispatch, SetStateAction } from 'react'
+import { styled } from '@mui/material/styles'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
-import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
+import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar'
+
+const drawerWidth = 240
 
 interface Props {
-  setIsOpen: () => void
+  isOpen: boolean
+  setIsOpen: Dispatch<SetStateAction<boolean>>
 }
 
-export const Header: FC<Props> = ({ setIsOpen }) => {
+interface AppBarProps extends MuiAppBarProps {
+  open?: boolean
+}
+
+const AppBar = styled(MuiAppBar, {
+  shouldForwardProp: (prop) => prop !== 'isOpen',
+})<AppBarProps>(({ theme, open }) => ({
+  zIndex: theme.zIndex.drawer + 1,
+  transition: theme.transitions.create(['width', 'margin'], {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  ...(open && {
+    marginLeft: drawerWidth,
+    width: `calc(100% - ${drawerWidth}px)`,
+    transition: theme.transitions.create(['width', 'margin'], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  }),
+}))
+
+export const Header: FC<Props> = ({ isOpen, setIsOpen }) => {
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
+    <AppBar position="fixed" open={isOpen}>
         <Toolbar>
-          <IconButton size="large" edge="start" color="inherit" aria-label="menu" sx={{ mr: 2 }}>
-            <MenuIcon onClick={() => setIsOpen((prev: boolean) => !prev)} />
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            onClick={() => setIsOpen(true)}
+            edge="start"
+            sx={{
+              marginRight: 5,
+              ...(isOpen && { display: 'none' }),
+            }}
+          >
+            <MenuIcon />
           </IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            News
+          <Typography variant="h6" noWrap component="div">
+            CODEBASE BOOKS
           </Typography>
-          <Button color="inherit">Login</Button>
         </Toolbar>
       </AppBar>
-    </Box>
   )
 }
