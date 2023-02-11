@@ -1,0 +1,6 @@
+version: '3'
+services:
+  node:
+    user: node
+    command: sleep infinity
+
