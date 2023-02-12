@@ -9,7 +9,7 @@ interface Props {
   children: ReactNode
 }
 
-export const Layout: FC<Props> = ({ children }) => {
+export const MainLayout: FC<Props> = ({ children }) => {
   const [isOpen, setIsOpen] = useState(true)
 
   return (
@@ -17,7 +17,7 @@ export const Layout: FC<Props> = ({ children }) => {
       <CssBaseline />
       <Header isOpen={isOpen} setIsOpen={setIsOpen} />
       <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
-      <Box component="main" sx={{ flexGrow: 1, p: 3, minHeight: '100vh' }} >
+      <Box component="main" sx={{ flexGrow: 1, p: 3, minHeight: '100vh' }}>
         <DrawerHeader />
         {children}
       </Box>
