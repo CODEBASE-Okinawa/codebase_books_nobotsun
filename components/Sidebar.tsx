@@ -73,8 +73,8 @@ export const Sidebar: FC<Props> = ({ isOpen, setIsOpen }) => {
         </DrawerHeader>
         <Divider />
         <List>
-          {SIDE_MENU_LIST.map((menu) => (
-            <Link href={menu.link}>
+          {SIDE_MENU_LIST.map((menu, index) => (
+            <Link href={menu.link} key={index} style={{ textDecoration: 'none', color: 'inherit' }}>
               <ListItem key={menu.title} disablePadding sx={{ display: 'block' }}>
                 <ListItemButton
                   sx={{
