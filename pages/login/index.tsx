@@ -2,18 +2,18 @@ import { Button, Card, TextField, Typography } from '@mui/material'
 import { SimpleLayout } from '@/layouts/SimpleLayout'
 import styles from './style.module.css'
 
-export default function Signup() {
+export default function Login() {
   return (
     <SimpleLayout>
+      {/* 全体を囲むCardコンポーネント */}
       <Card
         sx={{
           width: '95%',
-          maxWidth: 550,
+          maxWidth: '550px',
           padding: '50px 70px',
           position: 'absolute',
           top: '50%',
           left: '50%',
-          display: 'block',
           transform: 'translate(-50%, -50%)',
         }}
         variant="outlined"
@@ -25,14 +25,8 @@ export default function Signup() {
 
         {/* タイトルコンポーネント */}
         <Typography sx={{ marginBottom: '40px' }} component="h1" variant="h5">
-          新規アカウント登録
+          ログイン
         </Typography>
-
-        {/* 名前フィールド */}
-        <label className={`${styles.label} ${styles.margin}`}>
-          <Typography>名前</Typography>
-          <TextField required size="small" fullWidth variant="outlined" />
-        </label>
 
         {/* メールアドレスフィールド */}
         <label className={`${styles.label} ${styles.margin}`}>
@@ -49,13 +43,18 @@ export default function Signup() {
         {/* Submitボタン */}
         <div className={styles.margin}>
           <Button variant="contained" color="primary">
-            新規作成
+            ログイン
           </Button>
         </div>
 
         <div>
           <Button href="#link" color="primary">
-            ログインはこちら
+            アカウント作成はこちら
+          </Button>
+        </div>
+        <div>
+          <Button href="#link" color="primary">
+            パスワードを忘れた場合はこちら
           </Button>
         </div>
       </Card>
