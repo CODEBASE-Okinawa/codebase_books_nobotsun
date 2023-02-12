@@ -5,7 +5,9 @@ import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar'
-import { Session } from './Session'
+import { Session } from '../Session'
+import { ColorModeButton } from '../ColorModeButton'
+import styles from './style.module.css'
 
 const drawerWidth = 240
 
@@ -52,10 +54,17 @@ export const Header: FC<Props> = ({ isOpen, setIsOpen }) => {
         >
           <MenuIcon />
         </IconButton>
-        <Typography variant="h6" noWrap component="div">
-          CODEBASE BOOKS
-        </Typography>
-        <Session />
+        <div className={`${styles.display} ${styles['w-100']}`}>
+          <div>
+            <Typography variant="h6" noWrap component="div">
+              CODEBASE BOOKS
+            </Typography>
+          </div>
+          <div>
+            <Session />
+            <ColorModeButton />
+          </div>
+        </div>
       </Toolbar>
     </AppBar>
   )
