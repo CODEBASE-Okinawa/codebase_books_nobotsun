@@ -5,6 +5,7 @@ import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar'
+import { Session } from './Session'
 
 const drawerWidth = 240
 
@@ -38,23 +39,24 @@ const AppBar = styled(MuiAppBar, {
 export const Header: FC<Props> = ({ isOpen, setIsOpen }) => {
   return (
     <AppBar position="fixed" open={isOpen}>
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={() => setIsOpen(true)}
-            edge="start"
-            sx={{
-              marginRight: 5,
-              ...(isOpen && { display: 'none' }),
-            }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            CODEBASE BOOKS
-          </Typography>
-        </Toolbar>
-      </AppBar>
+      <Toolbar>
+        <IconButton
+          color="inherit"
+          aria-label="open drawer"
+          onClick={() => setIsOpen(true)}
+          edge="start"
+          sx={{
+            marginRight: 5,
+            ...(isOpen && { display: 'none' }),
+          }}
+        >
+          <MenuIcon />
+        </IconButton>
+        <Typography variant="h6" noWrap component="div">
+          CODEBASE BOOKS
+        </Typography>
+        <Session />
+      </Toolbar>
+    </AppBar>
   )
 }
