@@ -1,21 +1,15 @@
 import { FC, SetStateAction, Dispatch } from 'react'
 import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles'
-import MuiDrawer from '@mui/material/Drawer'
-import List from '@mui/material/List'
-import Divider from '@mui/material/Divider'
-import IconButton from '@mui/material/IconButton'
+import { Drawer as MuiDrawer, List, Divider, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
+import { DrawerHeader } from './DrawerHeader'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
-import ListItem from '@mui/material/ListItem'
-import ListItemButton from '@mui/material/ListItemButton'
-import ListItemIcon from '@mui/material/ListItemIcon'
-import ListItemText from '@mui/material/ListItemText'
-import { DrawerHeader } from './DrawerHeader'
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
 import PeopleIcon from '@mui/icons-material/People'
 import MenuBookIcon from '@mui/icons-material/MenuBook'
 import WorkIcon from '@mui/icons-material/Work'
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
+import Link from 'next/link'
 
 const drawerWidth = 240
 
@@ -61,11 +55,11 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 }))
 
 const SIDE_MENU_LIST = [
-  { title: '本管理', icon: <AdminPanelSettingsIcon /> },
-  { title: 'ユーザー一覧', icon: <PeopleIcon /> },
-  { title: '本一覧', icon: <MenuBookIcon /> },
-  { title: '借りている本一覧', icon: <WorkIcon /> },
-  { title: '予約している本一覧', icon: <CalendarMonthIcon /> },
+  { title: '本管理', icon: <AdminPanelSettingsIcon />, link: '/manages' },
+  { title: 'ユーザー一覧', icon: <PeopleIcon />, link: '/users' },
+  { title: '本一覧', icon: <MenuBookIcon />, link: '/books' },
+  { title: '借りている本一覧', icon: <WorkIcon />, link: '/lendings' },
+  { title: '予約している本一覧', icon: <CalendarMonthIcon />, link: '/reservations' },
 ]
 
 export const Sidebar: FC<Props> = ({ isOpen, setIsOpen }) => {
@@ -79,27 +73,29 @@ export const Sidebar: FC<Props> = ({ isOpen, setIsOpen }) => {
         </DrawerHeader>
         <Divider />
         <List>
-          {SIDE_MENU_LIST.map((text) => (
-            <ListItem key={text.title} disablePadding sx={{ display: 'block' }}>
-              <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: isOpen ? 'initial' : 'center',
-                  px: 2.5,
-                }}
-              >
-                <ListItemIcon
+          {SIDE_MENU_LIST.map((menu) => (
+            <Link href={menu.link}>
+              <ListItem key={menu.title} disablePadding sx={{ display: 'block' }}>
+                <ListItemButton
                   sx={{
-                    minWidth: 0,
-                    mr: isOpen ? 3 : 'auto',
-                    justifyContent: 'center',
+                    minHeight: 48,
+                    justifyContent: isOpen ? 'initial' : 'center',
+                    px: 2.5,
                   }}
                 >
-                  {text.icon}
-                </ListItemIcon>
-                <ListItemText primary={text.title} sx={{ opacity: isOpen ? 1 : 0 }} />
-              </ListItemButton>
-            </ListItem>
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr: isOpen ? 3 : 'auto',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    {menu.icon}
+                  </ListItemIcon>
+                  <ListItemText primary={menu.title} sx={{ opacity: isOpen ? 1 : 0 }} />
+                </ListItemButton>
+              </ListItem>
+            </Link>
           ))}
         </List>
       </Drawer>
