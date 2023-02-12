@@ -21,16 +21,17 @@
     "@trpc/next": "^10.11.0",
     "@trpc/react-query": "^10.11.0",
     "@trpc/server": "^10.11.0",
-    "@types/bcrypt": "^5.0.0",
     "@types/node": "18.13.0",
     "@types/react": "18.0.27",
     "@types/react-dom": "18.0.10",
+    "crypto-hash": "^2.0.1",
     "eslint": "8.34.0",
     "eslint-config-next": "13.1.6",
     "next": "13.1.6",
     "next-auth": "^4.19.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-hook-form": "^7.43.1",
     "typescript": "4.9.5"
   },
   "devDependencies": {

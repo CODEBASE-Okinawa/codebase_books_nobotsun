@@ -1,16 +1,16 @@
-import bcrypt from 'bcrypt'
 import prisma from '@/lib/prisma'
+import { sha256 } from 'crypto-hash'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
-  const { name, email, password } = req.body
-  const saltRounds = 10
-  const hashedPassword = await bcrypt.hash(password, saltRounds)
+  const { data } = req.body
+  console.debug(data.name, data.email, data.password)
+  const hashedPassword = await sha256(data.password)
 
   const result = await prisma.user.create({
     data: {
-      name: name,
-      email: email,
+      name: data.name,
+      email: data.email,
       password: hashedPassword,
       admin: false,
     },
