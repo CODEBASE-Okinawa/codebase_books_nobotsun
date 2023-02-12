@@ -1,0 +1,14 @@
+.root {
+  width: 95%;
+  max-width: 550px;
+  padding: 50px 70px;
+}
+.margin {
+  margin-bottom: 40px;
+}
+.logo {
+  width: 80px;
+}
+.label {
+  display: block;
+}
