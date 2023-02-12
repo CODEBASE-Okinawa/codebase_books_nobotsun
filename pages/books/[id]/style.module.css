@@ -1,0 +1,14 @@
+.margin {
+  margin-bottom: 40px;
+}
+
+.btnBlock {
+  display: flex;
+  justify-content: space-between;
+  max-width: 250px;
+}
+
+.datePicker {
+  display: flex;
+  align-items: center;
+}
