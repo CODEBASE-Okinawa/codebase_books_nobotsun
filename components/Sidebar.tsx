@@ -10,9 +10,12 @@ import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
-import InboxIcon from '@mui/icons-material/MoveToInbox'
-import MailIcon from '@mui/icons-material/Mail'
 import { DrawerHeader } from './DrawerHeader'
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
+import PeopleIcon from '@mui/icons-material/People'
+import MenuBookIcon from '@mui/icons-material/MenuBook'
+import WorkIcon from '@mui/icons-material/Work'
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
 
 const drawerWidth = 240
 
@@ -57,41 +60,49 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   }),
 }))
 
+const SIDE_MENU_LIST = [
+  { title: '本管理', icon: <AdminPanelSettingsIcon /> },
+  { title: 'ユーザー一覧', icon: <PeopleIcon /> },
+  { title: '本一覧', icon: <MenuBookIcon /> },
+  { title: '借りている本一覧', icon: <WorkIcon /> },
+  { title: '予約している本一覧', icon: <CalendarMonthIcon /> },
+]
+
 export const Sidebar: FC<Props> = ({ isOpen, setIsOpen }) => {
   const theme = useTheme()
 
   return (
     <>
-    <Drawer variant="permanent" open={isOpen}>
-      <DrawerHeader>
-        <IconButton onClick={() => setIsOpen(false)}>{theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}</IconButton>
-      </DrawerHeader>
-    <Divider />
-    <List>
-      {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-        <ListItem key={text} disablePadding sx={{ display: 'block' }}>
-          <ListItemButton
-            sx={{
-              minHeight: 48,
-              justifyContent: isOpen ? 'initial' : 'center',
-              px: 2.5,
-            }}
-          >
-            <ListItemIcon
-              sx={{
-                minWidth: 0,
-                mr: isOpen ? 3 : 'auto',
-                justifyContent: 'center',
-              }}
-            >
-              {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-            </ListItemIcon>
-            <ListItemText primary={text} sx={{ opacity: isOpen ? 1 : 0 }} />
-          </ListItemButton>
-        </ListItem>
-      ))}
-    </List>
-  </Drawer>
-  </>
+      <Drawer variant="permanent" open={isOpen}>
+        <DrawerHeader>
+          <IconButton onClick={() => setIsOpen(false)}>{theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}</IconButton>
+        </DrawerHeader>
+        <Divider />
+        <List>
+          {SIDE_MENU_LIST.map((text) => (
+            <ListItem key={text.title} disablePadding sx={{ display: 'block' }}>
+              <ListItemButton
+                sx={{
+                  minHeight: 48,
+                  justifyContent: isOpen ? 'initial' : 'center',
+                  px: 2.5,
+                }}
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: isOpen ? 3 : 'auto',
+                    justifyContent: 'center',
+                  }}
+                >
+                  {text.icon}
+                </ListItemIcon>
+                <ListItemText primary={text.title} sx={{ opacity: isOpen ? 1 : 0 }} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+      </Drawer>
+    </>
   )
 }
