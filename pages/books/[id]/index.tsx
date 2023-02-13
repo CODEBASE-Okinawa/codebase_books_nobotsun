@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/router'
 import { MainLayout } from '@/layouts/MainLayout'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -11,6 +10,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import FullCalendar from '@fullcalendar/react' // must go before plugins
 import dayGridPlugin from '@fullcalendar/daygrid' // a plugin!
+import { useReward } from 'react-rewards';
 import styles from './style.module.css'
 
 type Event = {
@@ -20,17 +20,33 @@ type Event = {
 }
 
 export default function Book() {
-  const router = useRouter()
   const [startAt, setStartAt] = useState<Dayjs | null>(null)
   const [endAt, setEndAt] = useState<Dayjs | null>(null)
   const [events, setEvents] = useState<Event[] | undefined>(undefined)
 
+  const { reward: rewardL, isAnimating: animeL } = useReward('rewardLeft', 'confetti', {
+    angle: 110,
+    position: "absolute",
+  })
+  const { reward: rewardR, isAnimating: animeR } = useReward('rewardRight', 'confetti', {
+    angle: 60,
+    position: "absolute",
+  })
+
   const handleLending = () => {
     // TODO: 借りるときの実装をAPIに投げる
+
+    // 紙吹雪アニメーション
+    rewardL()
+    rewardR()
   }
 
   const handleReservation = () => {
     // TODO: 予約するときの実装をAPIに投げる
+
+    // 紙吹雪アニメーション
+    rewardL()
+    rewardR()
   }
 
   const handleReset = () => {
@@ -133,12 +149,14 @@ export default function Book() {
               リセット
             </Button>
             <div className={styles.btnBlock}>
+              <span id="rewardLeft" className={styles.absolute} />
               <Button variant="contained" color="primary" onClick={handleLending}>
                 借りる
               </Button>
               <Button variant="contained" color="warning" onClick={handleReservation}>
                 予約する
               </Button>
+              <span id="rewardRight" className={`${styles.absolute} ${styles.right}`} />
             </div>
           </div>
         </div>

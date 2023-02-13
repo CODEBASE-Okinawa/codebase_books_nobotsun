@@ -3,6 +3,7 @@
 }
 
 .btnBlock {
+  position: relative;
   display: flex;
   justify-content: space-between;
   max-width: 250px;
@@ -11,4 +12,17 @@
 .datePicker {
   display: flex;
   align-items: center;
+}
+
+.confetti {
+  display: flex;
+  justify-content: center;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.right {
+  right: 0;
 }
