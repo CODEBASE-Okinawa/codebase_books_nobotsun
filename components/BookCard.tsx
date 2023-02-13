@@ -10,7 +10,7 @@ export const BookCard = () => {
         </Typography>
       </CardContent>
       <CardActions>
-        <Button>詳細</Button>
+        <Button href={`/books/1`}>詳細</Button>
       </CardActions>
     </Card>
   )
