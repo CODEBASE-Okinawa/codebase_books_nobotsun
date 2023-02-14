@@ -1,6 +1,5 @@
 import { FC, ReactNode, useState } from 'react'
-import Box from '@mui/material/Box'
-import CssBaseline from '@mui/material/CssBaseline'
+import { Box, Grid } from '@mui/material'
 import { Header } from '@/components/Header'
 import { Sidebar } from '@/components/Sidebar'
 import { DrawerHeader } from '@/components/DrawerHeader'
@@ -14,12 +13,13 @@ export const MainLayout: FC<Props> = ({ children }) => {
 
   return (
     <Box sx={{ display: 'flex' }}>
-      <CssBaseline />
       <Header isOpen={isOpen} setIsOpen={setIsOpen} />
       <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
       <Box component="main" sx={{ flexGrow: 1, p: 3, minHeight: '100vh' }}>
         <DrawerHeader />
-        {children}
+        <Grid container spacing={3}>
+          {children}
+        </Grid>
       </Box>
     </Box>
   )
