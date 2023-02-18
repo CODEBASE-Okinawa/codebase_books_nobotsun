@@ -1,12 +1,6 @@
-import dynamic from 'next/dynamic'
 import { Inter } from '@next/font/google'
 import { MainLayout } from '@/layouts/MainLayout'
-import { Session } from '@/components/Session'
 import { trpc } from '../utils/trpc'
-
-// const MainLayoutNoSSR = dynamic(() => import('@/layouts/MainLayout'), {
-//   ssr: false,
-// })
 
 const inter = Inter({ subsets: ['latin'] })
 
