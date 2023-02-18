@@ -17,3 +17,9 @@ npx prisma db seed
 #### Prisma Studio（GUI）を開くコマンド
 
 npx prisma studio
+
+#### DB を再作成し、seed を実行する
+
+npx prisma migrate reset
+npx prisma db push
+npx prisma db seed
