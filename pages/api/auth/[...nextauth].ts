@@ -1,8 +1,10 @@
 import { NextApiHandler } from 'next'
 import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import { sha256 } from 'crypto-hash'
-import prisma from '../../../lib/prisma'
+import bcrypt from 'bcryptjs'
+// import prisma from '../../../lib/prisma'
+import { PrismaClient } from '@prisma/client'
+const prisma = new PrismaClient()
 
 /**
  * ログイン認証します。
@@ -15,9 +17,12 @@ const checkUser = async (credentials: any) => {
       email: credentials.email,
     },
   })
-  const hashedPassword = await sha256(credentials.password)
 
-  if (credentials.email === user?.email && hashedPassword === user?.password) {
+  // if (user?.password !== undefined) {
+  const isCompare = await bcrypt.compare(credentials.password, user?.password!)
+  // }
+
+  if (credentials.email === user?.email && isCompare) {
     return user
   } else {
     return null
