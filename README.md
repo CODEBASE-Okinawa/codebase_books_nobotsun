@@ -10,6 +10,10 @@ npm run dev
 
 npx prisma db push
 
+#### seeder を実行するコマンド
+
+npx prisma db seed
+
 #### Prisma Studio（GUI）を開くコマンド
 
 npx prisma studio
