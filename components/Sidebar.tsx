@@ -55,8 +55,8 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 }))
 
 const SIDE_MENU_LIST = [
-  { title: '本管理', icon: <AdminPanelSettingsIcon />, link: '/manages' },
-  { title: 'ユーザー一覧', icon: <PeopleIcon />, link: '/users' },
+  { title: '本管理', icon: <AdminPanelSettingsIcon />, link: '/manages/books' },
+  { title: 'ユーザー一覧', icon: <PeopleIcon />, link: '/manages/users' },
   { title: '本一覧', icon: <MenuBookIcon />, link: '/books' },
   { title: '借りている本一覧', icon: <WorkIcon />, link: '/lendings' },
   { title: '予約している本一覧', icon: <CalendarMonthIcon />, link: '/reservations' },
