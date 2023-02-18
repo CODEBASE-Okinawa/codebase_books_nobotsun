@@ -2,12 +2,13 @@ import { useMemo, createContext, useState } from 'react'
 import { SessionProvider } from 'next-auth/react'
 import { CssBaseline } from '@mui/material'
 import type { AppProps } from 'next/app'
+import { trpc } from '../utils/trpc'
 
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 
 export const ColorModeContext = createContext({ toggleColorMode: () => {} })
 
-export default function App({ Component, pageProps }: AppProps) {
+const App = ({ Component, pageProps }: AppProps) => {
   const [mode, setMode] = useState<'light' | 'dark'>('light')
   const colorMode = useMemo(
     () => ({
@@ -27,7 +28,6 @@ export default function App({ Component, pageProps }: AppProps) {
       }),
     [mode]
   )
-
   return (
     <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
@@ -39,3 +39,4 @@ export default function App({ Component, pageProps }: AppProps) {
     </ColorModeContext.Provider>
   )
 }
+export default trpc.withTRPC(App)
