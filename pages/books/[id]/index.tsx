@@ -13,6 +13,7 @@ import dayGridPlugin from '@fullcalendar/daygrid' // a plugin!
 import { useReward } from 'react-rewards'
 import styles from './style.module.css'
 import { trpc } from '@/utils/trpc'
+import { useSnackbar } from '@/components/providers/GlobalSnackbar'
 
 type Event = {
   title: string
@@ -35,22 +36,27 @@ export default function Book() {
     position: 'absolute',
   })
 
+  const { showSnackbar } = useSnackbar()
+
   const handleLending = () => {
     // TODO: 借りるときの実装をAPIに投げる
     if (startAt !== null && endAt !== null) {
       const startDate = startAt.toISOString()
       const endDate = endAt.toISOString()
       create.mutate({
-        bookId: 'clea0pm5a000anua1conzfq5j',
+        bookId: 'clebfol96000apf8nghg14yun',
         lendStartAt: startDate,
         lendEndAt: endDate,
+      }, {
+        onSuccess: () => {
+          showSnackbar('本を借りました', 'success')
+          rewardL()
+          rewardR()
+        },
+        onError: () => showSnackbar('エラーが発生しました。再度お試しください。', 'error')
+
       })
-      if (create.isSuccess) {
-        console.log('登録が完了しました')
-        // 紙吹雪アニメーション
-        rewardL()
-        rewardR()
-      }
+
     }
   }
 
