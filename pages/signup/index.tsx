@@ -2,20 +2,38 @@ import { Button, Card, TextField, Typography } from '@mui/material'
 import { SimpleLayout } from '@/layouts/SimpleLayout'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import Router from 'next/router'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
 import styles from './style.module.css'
+import { useEffect } from 'react'
 
-type IFormInput = {
-  name: String
-  email: String
-  password: String
+type FormState = {
+  name: string
+  email: string
+  password: string
 }
 
 export default function Signup() {
-  const { register, handleSubmit } = useForm<IFormInput>()
+  // バリデーションのスキーマ
+  const schema = z.object({
+    name: z.string().min(1, { message: '1文字以上入力する必要があります' }),
+    email: z.string().email({ message: 'メールアドレスの形式ではありません' }),
+    password: z.string().min(8, { message: '8文字以上入力する必要があります' }),
+  })
 
-  const onSubmit: SubmitHandler<IFormInput> = async (data) => {
-    console.log(data)
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormState>({
+    resolver: zodResolver(schema),
+  })
 
+  useEffect(() => {
+    console.log(errors)
+  })
+
+  const onSubmit: SubmitHandler<FormState> = async (data) => {
     try {
       const body = { data }
       await fetch('/api/signup', {
@@ -58,19 +76,43 @@ export default function Signup() {
           {/* 名前フィールド */}
           <label className={`${styles.label} ${styles.margin}`}>
             <Typography>名前</Typography>
-            <TextField type="text" required size="small" fullWidth variant="outlined" {...register('name')} />
+            <TextField
+              type="text"
+              error={!!errors?.name}
+              helperText={errors.name?.message}
+              size="small"
+              fullWidth
+              variant="outlined"
+              {...register('name', { required: true })}
+            />
           </label>
 
           {/* メールアドレスフィールド */}
           <label className={`${styles.label} ${styles.margin}`}>
             <Typography>メールアドレス</Typography>
-            <TextField type="email" required size="small" fullWidth variant="outlined" {...register('email')} />
+            <TextField
+              type="email"
+              error={!!errors?.email}
+              helperText={errors.email?.message}
+              size="small"
+              fullWidth
+              variant="outlined"
+              {...register('email', { required: true })}
+            />
           </label>
 
           {/* パスワードフィールド */}
           <label className={`${styles.label} ${styles.margin}`}>
             <Typography>パスワード</Typography>
-            <TextField type="password" required size="small" fullWidth variant="outlined" {...register('password')} />
+            <TextField
+              type="password"
+              error={!!errors?.password}
+              helperText={errors.password?.message}
+              size="small"
+              fullWidth
+              variant="outlined"
+              {...register('password', { required: true })}
+            />
           </label>
 
           {/* Submitボタン */}
@@ -82,7 +124,7 @@ export default function Signup() {
         </form>
 
         <div>
-          <Button href="#link" color="primary">
+          <Button href="/login" color="primary">
             ログインはこちら
           </Button>
         </div>
