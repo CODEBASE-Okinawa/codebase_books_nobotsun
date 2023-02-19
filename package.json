@@ -46,6 +46,7 @@
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   },
   "devDependencies": {
+    "@types/jest": "^29.4.0",
     "@types/node": "^18.14.0",
     "prisma": "^4.10.1",
     "ts-node": "^10.9.1",
