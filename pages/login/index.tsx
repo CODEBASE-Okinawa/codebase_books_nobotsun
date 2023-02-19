@@ -1,8 +1,53 @@
+import type { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next'
+import { useForm, SubmitHandler } from 'react-hook-form'
+import { useState } from 'react'
+import { useRouter } from 'next/router'
+import { getCsrfToken, signIn } from 'next-auth/react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
 import { Button, Card, TextField, Typography } from '@mui/material'
 import { SimpleLayout } from '@/layouts/SimpleLayout'
 import styles from './style.module.css'
 
-export default function Login() {
+type FormState = {
+  email: string
+  password: string
+}
+
+export default function Login({ csrfToken }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  const schema = z.object({
+    email: z.string().email({ message: 'メールアドレスの形式ではありません' }),
+    password: z.string().min(8, { message: '8文字以上入力する必要があります' }),
+  })
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormState>({
+    resolver: zodResolver(schema),
+  })
+
+  const router = useRouter()
+  const [error, setError] = useState('')
+  const onSubmit: SubmitHandler<FormState> = async (data) => {
+    setError('')
+    console.log(data)
+    await signIn('credentials', {
+      redirect: false,
+      email: data.email,
+      password: data.password,
+      callbackUrl: `${window.location.origin}`,
+    }).then((res) => {
+      if (res?.error) {
+        setError('ユーザーが存在しないかパスワードが正しくありません')
+      } else {
+        // ログイン後に飛ぶページ
+        router.push('/')
+      }
+    })
+  }
+
   return (
     <SimpleLayout>
       {/* 全体を囲むCardコンポーネント */}
@@ -27,28 +72,46 @@ export default function Login() {
         <Typography sx={{ marginBottom: '40px' }} component="h1" variant="h5">
           ログイン
         </Typography>
+        <span style={{ color: 'red' }}>{error}</span>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
+          {/* メールアドレスフィールド */}
+          <label className={`${styles.label} ${styles.margin}`}>
+            <Typography>メールアドレス</Typography>
+            <TextField
+              type="email"
+              error={!!errors?.email}
+              helperText={errors.email?.message}
+              size="small"
+              fullWidth
+              variant="outlined"
+              {...register('email', { required: true })}
+            />
+          </label>
 
-        {/* メールアドレスフィールド */}
-        <label className={`${styles.label} ${styles.margin}`}>
-          <Typography>メールアドレス</Typography>
-          <TextField type="email" required size="small" fullWidth variant="outlined" />
-        </label>
+          {/* パスワードフィールド */}
+          <label className={`${styles.label} ${styles.margin}`}>
+            <Typography>パスワード</Typography>
+            <TextField
+              type="password"
+              error={!!errors?.password}
+              helperText={errors.password?.message}
+              size="small"
+              fullWidth
+              variant="outlined"
+              {...register('password', { required: true })}
+            />
+          </label>
 
-        {/* パスワードフィールド */}
-        <label className={`${styles.label} ${styles.margin}`}>
-          <Typography>パスワード</Typography>
-          <TextField type="password" required size="small" fullWidth variant="outlined" />
-        </label>
-
-        {/* Submitボタン */}
-        <div className={styles.margin}>
-          <Button variant="contained" color="primary">
-            ログイン
-          </Button>
-        </div>
-
+          {/* Submitボタン */}
+          <div className={styles.margin}>
+            <Button type="submit" variant="contained" color="primary">
+              ログイン
+            </Button>
+          </div>
+        </form>
         <div>
-          <Button href="#link" color="primary">
+          <Button href="/signup" color="primary">
             アカウント作成はこちら
           </Button>
         </div>
@@ -60,4 +123,11 @@ export default function Login() {
       </Card>
     </SimpleLayout>
   )
+}
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const csrfToken = await getCsrfToken(context)
+  return {
+    props: { csrfToken },
+  }
 }
