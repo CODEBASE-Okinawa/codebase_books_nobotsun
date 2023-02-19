@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { Card, CardActions, CardContent, CardMedia, Button, Typography } from '@mui/material'
 
 export const BookCard = () => {
@@ -10,7 +11,9 @@ export const BookCard = () => {
         </Typography>
       </CardContent>
       <CardActions>
-        <Button href={`/books/1`}>詳細</Button>
+        <Link href="/books/1">
+          <Button>詳細</Button>
+        </Link>
       </CardActions>
     </Card>
   )
