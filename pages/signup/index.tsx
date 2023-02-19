@@ -124,7 +124,7 @@ export default function Signup() {
         </form>
 
         <div>
-          <Button href="#link" color="primary">
+          <Button href="/login" color="primary">
             ログインはこちら
           </Button>
         </div>
