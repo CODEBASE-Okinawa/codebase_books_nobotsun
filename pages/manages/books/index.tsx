@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { MainLayout } from '@/layouts/MainLayout'
 import { Grid, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography, Button } from '@mui/material'
@@ -70,9 +71,9 @@ export default function Books() {
           <Typography component="h2" variant="h5">
             本一覧
           </Typography>
-          <Button href="books/new" variant="contained">
-            本を登録する
-          </Button>
+          <Link href="books/new">
+            <Button variant="contained">本を登録する</Button>
+          </Link>
         </div>
         <TableContainer>
           <Table stickyHeader>

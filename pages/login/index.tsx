@@ -1,4 +1,5 @@
 import type { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next'
+import Link from 'next/link'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { useState } from 'react'
 import { useRouter } from 'next/router'
@@ -111,9 +112,9 @@ export default function Login({ csrfToken }: InferGetServerSidePropsType<typeof 
           </div>
         </form>
         <div>
-          <Button href="/signup" color="primary">
-            アカウント作成はこちら
-          </Button>
+          <Link href="/signup">
+            <Button color="primary">アカウント作成はこちら</Button>
+          </Link>
         </div>
         <div>
           <Button href="#link" color="primary">

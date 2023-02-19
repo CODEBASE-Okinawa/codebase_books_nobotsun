@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import styles from './style.module.css'
 import { useEffect } from 'react'
+import Link from 'next/link'
 
 type FormState = {
   name: string
@@ -124,9 +125,9 @@ export default function Signup() {
         </form>
 
         <div>
-          <Button href="/login" color="primary">
-            ログインはこちら
-          </Button>
+          <Link href="login">
+            <Button color="primary">ログインはこちら</Button>
+          </Link>
         </div>
       </Card>
     </SimpleLayout>
