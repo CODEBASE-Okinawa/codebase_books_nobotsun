@@ -10,8 +10,10 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import FullCalendar from '@fullcalendar/react' // must go before plugins
 import dayGridPlugin from '@fullcalendar/daygrid' // a plugin!
-import { useReward } from 'react-rewards';
+import { useReward } from 'react-rewards'
 import styles from './style.module.css'
+import { trpc } from '@/utils/trpc'
+import { useSnackbar } from '@/components/providers/GlobalSnackbar'
 
 type Event = {
   title: string
@@ -20,25 +22,42 @@ type Event = {
 }
 
 export default function Book() {
+  const create = trpc.lending.create.useMutation()
   const [startAt, setStartAt] = useState<Dayjs | null>(null)
   const [endAt, setEndAt] = useState<Dayjs | null>(null)
   const [events, setEvents] = useState<Event[] | undefined>(undefined)
 
   const { reward: rewardL, isAnimating: animeL } = useReward('rewardLeft', 'confetti', {
     angle: 110,
-    position: "absolute",
+    position: 'absolute',
   })
   const { reward: rewardR, isAnimating: animeR } = useReward('rewardRight', 'confetti', {
     angle: 60,
-    position: "absolute",
+    position: 'absolute',
   })
+
+  const { showSnackbar } = useSnackbar()
 
   const handleLending = () => {
     // TODO: 借りるときの実装をAPIに投げる
+    if (startAt !== null && endAt !== null) {
+      const startDate = startAt.toISOString()
+      const endDate = endAt.toISOString()
+      create.mutate({
+        bookId: 'clebfol96000apf8nghg14yun',
+        lendStartAt: startDate,
+        lendEndAt: endDate,
+      }, {
+        onSuccess: () => {
+          showSnackbar('本を借りました', 'success')
+          rewardL()
+          rewardR()
+        },
+        onError: () => showSnackbar('エラーが発生しました。再度お試しください。', 'error')
 
-    // 紙吹雪アニメーション
-    rewardL()
-    rewardR()
+      })
+
+    }
   }
 
   const handleReservation = () => {
