@@ -1,4 +1,4 @@
-import { date, z } from 'zod'
+import { z } from 'zod'
 import { protectedProcedure, router } from '../trpc'
 import prisma from '@/lib/prisma'
 import { TRPCError } from '@trpc/server'
@@ -9,8 +9,8 @@ export const lendingRouter = router({
     .input(
       z.object({
         bookId: z.string(),
-        lendStartAt: z.string().datetime(),
-        lendEndAt: z.string().datetime(),
+        startAt: z.string().datetime(),
+        endAt: z.string().datetime(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -25,14 +25,14 @@ export const lendingRouter = router({
           data: {
             userId: userInfo?.id,
             bookId: input.bookId,
-            lendStartAt: input.lendStartAt,
-            lendEndAt: input.lendEndAt,
+            startAt: input.startAt,
+            endAt: input.endAt,
           },
         })
       } catch {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
-          message: '値を登録できませんでした。もう一度試してください。',
+          message: '値を登録できませんでした。もう一度お試しください。',
         })
       }
       return { text: '登録完了' }

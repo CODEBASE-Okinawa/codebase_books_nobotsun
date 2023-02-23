@@ -15,17 +15,15 @@ import styles from './style.module.css'
 import { trpc } from '@/utils/trpc'
 import { useSnackbar } from '@/components/providers/GlobalSnackbar'
 
-type Event = {
-  title: string
-  start: string | Date
-  end: string | Date
-}
-
 export default function Book() {
+  // 貸出中、予約中の日付を取得する
+  const events = trpc.book.getEvent.useQuery({
+    bookId: 'cleghywpx000amp2mdyy9qq48',
+  })
+  // 貸出の登録処理
   const create = trpc.lending.create.useMutation()
   const [startAt, setStartAt] = useState<Dayjs | null>(null)
   const [endAt, setEndAt] = useState<Dayjs | null>(null)
-  const [events, setEvents] = useState<Event[] | undefined>(undefined)
 
   const { reward: rewardL, isAnimating: animeL } = useReward('rewardLeft', 'confetti', {
     angle: 110,
@@ -43,20 +41,21 @@ export default function Book() {
     if (startAt !== null && endAt !== null) {
       const startDate = startAt.toISOString()
       const endDate = endAt.toISOString()
-      create.mutate({
-        bookId: 'clebfol96000apf8nghg14yun',
-        lendStartAt: startDate,
-        lendEndAt: endDate,
-      }, {
-        onSuccess: () => {
-          showSnackbar('本を借りました', 'success')
-          rewardL()
-          rewardR()
+      create.mutate(
+        {
+          bookId: 'cleghywpx000amp2mdyy9qq48',
+          startAt: startDate,
+          endAt: endDate,
         },
-        onError: () => showSnackbar('エラーが発生しました。再度お試しください。', 'error')
-
-      })
-
+        {
+          onSuccess: () => {
+            showSnackbar('本を借りました', 'success')
+            rewardL()
+            rewardR()
+          },
+          onError: () => showSnackbar('エラーが発生しました。再度お試しください。', 'error'),
+        }
+      )
     }
   }
 
@@ -72,23 +71,6 @@ export default function Book() {
     setStartAt(null)
     setEndAt(null)
   }
-
-  useEffect(() => {
-    // TODO: APIから取得する
-    const events = [
-      {
-        title: '貸出中',
-        start: '2023-02-10',
-        end: '2023-02-14',
-      },
-      {
-        title: '貸出中',
-        start: '2023-02-20',
-        end: '2023-02-23',
-      },
-    ]
-    setEvents(events)
-  }, [])
 
   useEffect(() => {
     if (!startAt || endAt) return
@@ -179,7 +161,7 @@ export default function Book() {
             </div>
           </div>
         </div>
-        <FullCalendar plugins={[dayGridPlugin]} initialView="dayGridMonth" events={events} />
+        <FullCalendar plugins={[dayGridPlugin]} initialView="dayGridMonth" events={events.data} />
       </Grid>
     </MainLayout>
   )

@@ -1,7 +1,9 @@
 import { router } from '../trpc'
+import { bookRouter } from './book'
 import { lendingRouter } from './lending'
 
 export const appRouter = router({
+  book: bookRouter,
   lending: lendingRouter,
 })
 
