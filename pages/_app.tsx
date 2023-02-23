@@ -3,8 +3,9 @@ import { SessionProvider } from 'next-auth/react'
 import { CssBaseline } from '@mui/material'
 import type { AppProps } from 'next/app'
 import { trpc } from '../utils/trpc'
-
 import { ThemeProvider, createTheme } from '@mui/material/styles'
+import { SnackbarContextProvider } from '@/components/providers/GlobalSnackbar'
+import '../styles/globals.css'
 
 export const ColorModeContext = createContext({ toggleColorMode: () => {} })
 
@@ -33,7 +34,9 @@ const App = ({ Component, pageProps }: AppProps) => {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <SessionProvider session={pageProps.session}>
-          <Component {...pageProps} />
+          <SnackbarContextProvider>
+            <Component {...pageProps} />
+          </SnackbarContextProvider>
         </SessionProvider>
       </ThemeProvider>
     </ColorModeContext.Provider>
