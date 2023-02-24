@@ -21,7 +21,8 @@ export default function Book() {
     bookId: 'cleghywpx000amp2mdyy9qq48',
   })
   // 貸出の登録処理
-  const create = trpc.lending.create.useMutation()
+  const lendCreate = trpc.lending.create.useMutation()
+  const reservationCreate = trpc.reservation.create.useMutation()
   const [startAt, setStartAt] = useState<Dayjs | null>(null)
   const [endAt, setEndAt] = useState<Dayjs | null>(null)
 
@@ -41,7 +42,7 @@ export default function Book() {
     if (startAt !== null && endAt !== null) {
       const startDate = startAt.toISOString()
       const endDate = endAt.toISOString()
-      create.mutate(
+      lendCreate.mutate(
         {
           bookId: 'cleghywpx000amp2mdyy9qq48',
           startAt: startDate,
@@ -61,10 +62,25 @@ export default function Book() {
 
   const handleReservation = () => {
     // TODO: 予約するときの実装をAPIに投げる
-
-    // 紙吹雪アニメーション
-    rewardL()
-    rewardR()
+    if (startAt !== null && endAt !== null) {
+      const startDate = startAt.toISOString()
+      const endDate = endAt.toISOString()
+      reservationCreate.mutate(
+        {
+          bookId: 'cleghywpx000amp2mdyy9qq48',
+          startAt: startDate,
+          endAt: endDate,
+        },
+        {
+          onSuccess: () => {
+            showSnackbar('本を予約しました', 'success')
+            rewardL()
+            rewardR()
+          },
+          onError: () => showSnackbar('エラーが発生しました。再度お試しください。', 'error'),
+        }
+      )
+    }
   }
 
   const handleReset = () => {
