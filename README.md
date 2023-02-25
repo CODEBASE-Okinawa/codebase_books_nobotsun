@@ -4,21 +4,21 @@
 
 npm run dev
 
-### Prisma
+## Prisma
 
-#### DB スキーマを SQLite に反映させるコマンド
+### DB スキーマを SQLite に反映させるコマンド
 
 npx prisma db push
 
-#### seeder を実行するコマンド
+### seeder を実行するコマンド
 
 npx prisma db seed
 
-#### Prisma Studio（GUI）を開くコマンド
+### Prisma Studio（GUI）を開くコマンド
 
 npx prisma studio
 
-#### DB を再作成し、seed を実行する
+### DB を再作成し、seed を実行する
 
 npx prisma migrate reset  
 npx prisma db push  
