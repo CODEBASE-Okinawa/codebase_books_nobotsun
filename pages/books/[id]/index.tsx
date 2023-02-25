@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Grid, Breadcrumbs, Typography, Chip, TextField, Button } from '@mui/material'
 import dayjs, { type Dayjs } from 'dayjs'
+import isBetween from 'dayjs/plugin/isBetween'
 import ja from 'dayjs/locale/ja'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
@@ -15,17 +16,16 @@ import styles from './style.module.css'
 import { trpc } from '@/utils/trpc'
 import { useSnackbar } from '@/components/providers/GlobalSnackbar'
 
-type Event = {
-  title: string
-  start: string | Date
-  end: string | Date
-}
-
 export default function Book() {
-  const create = trpc.lending.create.useMutation()
+  // 貸出中、予約中の日付を取得する
+  const events = trpc.book.getEvent.useQuery({
+    bookId: 'clejbqfs5000auquc5qkzjfgl',
+  })
+  // 貸出の登録処理
+  const lendCreate = trpc.lending.create.useMutation()
+  const reservationCreate = trpc.reservation.create.useMutation()
   const [startAt, setStartAt] = useState<Dayjs | null>(null)
   const [endAt, setEndAt] = useState<Dayjs | null>(null)
-  const [events, setEvents] = useState<Event[] | undefined>(undefined)
 
   const { reward: rewardL, isAnimating: animeL } = useReward('rewardLeft', 'confetti', {
     angle: 110,
@@ -38,57 +38,92 @@ export default function Book() {
 
   const { showSnackbar } = useSnackbar()
 
+  /**
+   * 登録できるか判定する処理
+   * @returns boolean trueが登録できる。falseができない
+   */
+  const isCanSubmit = () => {
+    let isCanSubmit = true
+    let message = ''
+
+    if (startAt === null || endAt === null) {
+      isCanSubmit = false
+      message = '貸出日または予約日が設定されていません'
+      return { isCanSubmit: isCanSubmit, message: message }
+    } else if (events.data === undefined) {
+      isCanSubmit = false
+      message = 'イベントが取得されていません'
+      return { isCanSubmit: isCanSubmit, message: message }
+    }
+
+    // dayjsに日付比較のプラグインをセットする
+    dayjs.extend(isBetween)
+    const selectedStartDate = dayjs(startAt).format('YYYY-MM-DD')
+    const selectedEndDate = dayjs(endAt).format('YYYY-MM-DD')
+
+    for (const event of events.data) {
+      // []でbetweenStartDateとbetweenEndDateの日付が含まれるようにしている
+      const isStartDate = dayjs(selectedStartDate).isBetween(event.start, event.end, 'day', '()')
+      const isEndDate = dayjs(selectedEndDate).isBetween(event.start, event.end, 'day', '()')
+
+      if (isStartDate || isEndDate) {
+        isCanSubmit = false
+        message = '貸出、または予約日と被っています。 別の日程に変更してください。'
+        return { isCanSubmit: isCanSubmit, message: message }
+      }
+    }
+
+    return { isCanSubmit: isCanSubmit, message: message }
+  }
+
   const handleLending = () => {
-    // TODO: 借りるときの実装をAPIに投げる
-    if (startAt !== null && endAt !== null) {
-      const startDate = startAt.toISOString()
-      const endDate = endAt.toISOString()
-      create.mutate({
-        bookId: 'clebfol96000apf8nghg14yun',
-        lendStartAt: startDate,
-        lendEndAt: endDate,
-      }, {
+    if (!isCanSubmit().isCanSubmit) return alert(isCanSubmit().message)
+
+    const startDate = startAt!.toString()
+    const endDate = endAt!.toString()
+    lendCreate.mutate(
+      {
+        bookId: 'clejbqfs5000auquc5qkzjfgl',
+        startAt: startDate,
+        endAt: endDate,
+      },
+      {
         onSuccess: () => {
           showSnackbar('本を借りました', 'success')
           rewardL()
           rewardR()
         },
-        onError: () => showSnackbar('エラーが発生しました。再度お試しください。', 'error')
-
-      })
-
-    }
+        onError: () => showSnackbar('エラーが発生しました。再度お試しください。', 'error'),
+      }
+    )
   }
 
   const handleReservation = () => {
-    // TODO: 予約するときの実装をAPIに投げる
+    if (!isCanSubmit().isCanSubmit) return alert(isCanSubmit().message)
 
-    // 紙吹雪アニメーション
-    rewardL()
-    rewardR()
+    const startDate = startAt!.toString()
+    const endDate = endAt!.toString()
+    reservationCreate.mutate(
+      {
+        bookId: 'clejbqfs5000auquc5qkzjfgl',
+        startAt: startDate,
+        endAt: endDate,
+      },
+      {
+        onSuccess: () => {
+          showSnackbar('本を予約しました', 'success')
+          rewardL()
+          rewardR()
+        },
+        onError: () => showSnackbar('エラーが発生しました。再度お試しください。', 'error'),
+      }
+    )
   }
 
   const handleReset = () => {
     setStartAt(null)
     setEndAt(null)
   }
-
-  useEffect(() => {
-    // TODO: APIから取得する
-    const events = [
-      {
-        title: '貸出中',
-        start: '2023-02-10',
-        end: '2023-02-14',
-      },
-      {
-        title: '貸出中',
-        start: '2023-02-20',
-        end: '2023-02-23',
-      },
-    ]
-    setEvents(events)
-  }, [])
 
   useEffect(() => {
     if (!startAt || endAt) return
@@ -179,7 +214,7 @@ export default function Book() {
             </div>
           </div>
         </div>
-        <FullCalendar plugins={[dayGridPlugin]} initialView="dayGridMonth" events={events} />
+        <FullCalendar plugins={[dayGridPlugin]} initialView="dayGridMonth" events={events.data} />
       </Grid>
     </MainLayout>
   )

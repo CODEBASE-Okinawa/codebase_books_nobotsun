@@ -3,8 +3,8 @@ import { protectedProcedure, router } from '../trpc'
 import prisma from '@/lib/prisma'
 import { TRPCError } from '@trpc/server'
 
-export const lendingRouter = router({
-  // 本の貸し出し登録
+export const reservetionRoute = router({
+  // 本の予約登録
   create: protectedProcedure
     .input(
       z.object({
@@ -21,7 +21,7 @@ export const lendingRouter = router({
             email: userEmail,
           },
         })
-        await prisma.lending.create({
+        await prisma.reservetion.create({
           data: {
             userId: userInfo?.id,
             bookId: input.bookId,
@@ -35,6 +35,5 @@ export const lendingRouter = router({
           message: '値を登録できませんでした。もう一度お試しください。',
         })
       }
-      return { text: '登録完了' }
     }),
 })

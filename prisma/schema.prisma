@@ -38,30 +38,30 @@ model Book {
 
 // 貸出管理系
 model Lending {
-  id          String   @id @default(cuid())
-  user        User?    @relation(fields: [userId], references: [id])
-  userId      String?  @map("user_id")
-  book        Book?    @relation(fields: [bookId], references: [id])
-  bookId      String?  @map("book_id")
-  lendStartAt DateTime @map(name: "lend_start_at")
-  lendEndAt   DateTime @map(name: "lend_end_at")
-  createdAt   DateTime @default(now()) @map(name: "created_at")
-  updatedAt   DateTime @updatedAt @map(name: "updated_at")
+  id        String   @id @default(cuid())
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?  @map("user_id")
+  book      Book?    @relation(fields: [bookId], references: [id])
+  bookId    String?  @map("book_id")
+  startAt   DateTime @map(name: "start_at")
+  endAt     DateTime @map(name: "end_at")
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
 
   @@map("lendings")
 }
 
 // 予約管理系
 model Reservetion {
-  id                 String   @id @default(cuid())
-  user               User?    @relation(fields: [userId], references: [id])
-  userId             String?  @map("user_id")
-  book               Book?    @relation(fields: [bookId], references: [id])
-  bookId             String?  @map("book_id")
-  reservetionStartAt DateTime @map(name: "reservetion_start_at")
-  reservetionEndAt   DateTime @map(name: "reservetion_end_at")
-  createdAt          DateTime @default(now()) @map(name: "created_at")
-  updatedAt          DateTime @updatedAt @map(name: "updated_at")
+  id        String   @id @default(cuid())
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?  @map("user_id")
+  book      Book?    @relation(fields: [bookId], references: [id])
+  bookId    String?  @map("book_id")
+  startAt   DateTime @map(name: "start_at")
+  endAt     DateTime @map(name: "end_at")
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
 
   @@map("reservetions")
 }
