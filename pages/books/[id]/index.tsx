@@ -19,7 +19,7 @@ import { useSnackbar } from '@/components/providers/GlobalSnackbar'
 export default function Book() {
   // 貸出中、予約中の日付を取得する
   const events = trpc.book.getEvent.useQuery({
-    bookId: 'cleghywpx000amp2mdyy9qq48',
+    bookId: 'clejbqfs5000auquc5qkzjfgl',
   })
   // 貸出の登録処理
   const lendCreate = trpc.lending.create.useMutation()
@@ -62,15 +62,9 @@ export default function Book() {
     const selectedEndDate = dayjs(endAt).format('YYYY-MM-DD')
 
     for (const event of events.data) {
-      const betweenStartDate = dayjs(event.start).format('YYYY-MM-DD')
-      const betweenEndDate = dayjs(event.end).format('YYYY-MM-DD')
-
       // []でbetweenStartDateとbetweenEndDateの日付が含まれるようにしている
-      const isStartDate = dayjs(selectedStartDate).isBetween(betweenStartDate, betweenEndDate, 'day', '()')
-      const isEndDate = dayjs(selectedEndDate).isBetween(betweenStartDate, betweenEndDate, 'day', '()')
-
-      console.log('isStart ', isStartDate)
-      console.log('isEnd ', isEndDate)
+      const isStartDate = dayjs(selectedStartDate).isBetween(event.start, event.end, 'day', '()')
+      const isEndDate = dayjs(selectedEndDate).isBetween(event.start, event.end, 'day', '()')
 
       if (isStartDate || isEndDate) {
         isCanSubmit = false
@@ -85,11 +79,11 @@ export default function Book() {
   const handleLending = () => {
     if (!isCanSubmit().isCanSubmit) return alert(isCanSubmit().message)
 
-    const startDate = startAt!.toISOString()
-    const endDate = endAt!.toISOString()
+    const startDate = startAt!.toString()
+    const endDate = endAt!.toString()
     lendCreate.mutate(
       {
-        bookId: 'cleghywpx000amp2mdyy9qq48',
+        bookId: 'clejbqfs5000auquc5qkzjfgl',
         startAt: startDate,
         endAt: endDate,
       },
@@ -107,11 +101,11 @@ export default function Book() {
   const handleReservation = () => {
     if (!isCanSubmit().isCanSubmit) return alert(isCanSubmit().message)
 
-    const startDate = startAt!.toISOString()
-    const endDate = endAt!.toISOString()
+    const startDate = startAt!.toString()
+    const endDate = endAt!.toString()
     reservationCreate.mutate(
       {
-        bookId: 'cleghywpx000amp2mdyy9qq48',
+        bookId: 'clejbqfs5000auquc5qkzjfgl',
         startAt: startDate,
         endAt: endDate,
       },

@@ -9,8 +9,8 @@ export const reservetionRoute = router({
     .input(
       z.object({
         bookId: z.string(),
-        startAt: z.string().datetime(),
-        endAt: z.string().datetime(),
+        startAt: z.string().transform((arg) => new Date(arg)),
+        endAt: z.string().transform((arg) => new Date(arg)),
       })
     )
     .mutation(async ({ ctx, input }) => {
