@@ -4,6 +4,7 @@ import prisma from '@/lib/prisma'
 import { TRPCError } from '@trpc/server'
 
 export const reservetionRoute = router({
+  // 本の予約登録
   create: protectedProcedure
     .input(
       z.object({

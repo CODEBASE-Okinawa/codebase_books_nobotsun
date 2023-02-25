@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Grid, Breadcrumbs, Typography, Chip, TextField, Button } from '@mui/material'
 import dayjs, { type Dayjs } from 'dayjs'
+import isBetween from 'dayjs/plugin/isBetween'
 import ja from 'dayjs/locale/ja'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
@@ -37,50 +38,92 @@ export default function Book() {
 
   const { showSnackbar } = useSnackbar()
 
-  const handleLending = () => {
-    // TODO: 借りるときの実装をAPIに投げる
-    if (startAt !== null && endAt !== null) {
-      const startDate = startAt.toISOString()
-      const endDate = endAt.toISOString()
-      lendCreate.mutate(
-        {
-          bookId: 'cleghywpx000amp2mdyy9qq48',
-          startAt: startDate,
-          endAt: endDate,
-        },
-        {
-          onSuccess: () => {
-            showSnackbar('本を借りました', 'success')
-            rewardL()
-            rewardR()
-          },
-          onError: () => showSnackbar('エラーが発生しました。再度お試しください。', 'error'),
-        }
-      )
+  /**
+   * 登録できるか判定する処理
+   * @returns boolean trueが登録できる。falseができない
+   */
+  const isCanSubmit = () => {
+    let isCanSubmit = true
+    let message = ''
+
+    if (startAt === null || endAt === null) {
+      isCanSubmit = false
+      message = '貸出日または予約日が設定されていません'
+      return { isCanSubmit: isCanSubmit, message: message }
+    } else if (events.data === undefined) {
+      isCanSubmit = false
+      message = 'イベントが取得されていません'
+      return { isCanSubmit: isCanSubmit, message: message }
     }
+
+    // dayjsに日付比較のプラグインをセットする
+    dayjs.extend(isBetween)
+    const selectedStartDate = dayjs(startAt).format('YYYY-MM-DD')
+    const selectedEndDate = dayjs(endAt).format('YYYY-MM-DD')
+
+    for (const event of events.data) {
+      const betweenStartDate = dayjs(event.start).format('YYYY-MM-DD')
+      const betweenEndDate = dayjs(event.end).format('YYYY-MM-DD')
+
+      // []でbetweenStartDateとbetweenEndDateの日付が含まれるようにしている
+      const isStartDate = dayjs(selectedStartDate).isBetween(betweenStartDate, betweenEndDate, 'day', '()')
+      const isEndDate = dayjs(selectedEndDate).isBetween(betweenStartDate, betweenEndDate, 'day', '()')
+
+      console.log('isStart ', isStartDate)
+      console.log('isEnd ', isEndDate)
+
+      if (isStartDate || isEndDate) {
+        isCanSubmit = false
+        message = '貸出、または予約日と被っています。 別の日程に変更してください。'
+        return { isCanSubmit: isCanSubmit, message: message }
+      }
+    }
+
+    return { isCanSubmit: isCanSubmit, message: message }
+  }
+
+  const handleLending = () => {
+    if (!isCanSubmit().isCanSubmit) return alert(isCanSubmit().message)
+
+    const startDate = startAt!.toISOString()
+    const endDate = endAt!.toISOString()
+    lendCreate.mutate(
+      {
+        bookId: 'cleghywpx000amp2mdyy9qq48',
+        startAt: startDate,
+        endAt: endDate,
+      },
+      {
+        onSuccess: () => {
+          showSnackbar('本を借りました', 'success')
+          rewardL()
+          rewardR()
+        },
+        onError: () => showSnackbar('エラーが発生しました。再度お試しください。', 'error'),
+      }
+    )
   }
 
   const handleReservation = () => {
-    // TODO: 予約するときの実装をAPIに投げる
-    if (startAt !== null && endAt !== null) {
-      const startDate = startAt.toISOString()
-      const endDate = endAt.toISOString()
-      reservationCreate.mutate(
-        {
-          bookId: 'cleghywpx000amp2mdyy9qq48',
-          startAt: startDate,
-          endAt: endDate,
+    if (!isCanSubmit().isCanSubmit) return alert(isCanSubmit().message)
+
+    const startDate = startAt!.toISOString()
+    const endDate = endAt!.toISOString()
+    reservationCreate.mutate(
+      {
+        bookId: 'cleghywpx000amp2mdyy9qq48',
+        startAt: startDate,
+        endAt: endDate,
+      },
+      {
+        onSuccess: () => {
+          showSnackbar('本を予約しました', 'success')
+          rewardL()
+          rewardR()
         },
-        {
-          onSuccess: () => {
-            showSnackbar('本を予約しました', 'success')
-            rewardL()
-            rewardR()
-          },
-          onError: () => showSnackbar('エラーが発生しました。再度お試しください。', 'error'),
-        }
-      )
-    }
+        onError: () => showSnackbar('エラーが発生しました。再度お試しください。', 'error'),
+      }
+    )
   }
 
   const handleReset = () => {
