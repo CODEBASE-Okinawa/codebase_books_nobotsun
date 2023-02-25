@@ -6,21 +6,22 @@ export type Books = {
 }
 
 export type BookInfo = {
-  title: string
-  state: string
+  title?: string
+  status: string
+  imageUrl?: string
   date?: string
-  href: string
+  href?: string
 }
 
-const stateBackgroundColor = (state: string) => {
-  switch (state) {
+const statusBackgroundColor = (status: string) => {
+  switch (status) {
     case '予約中':
       return '#f4a460'
-    case '貸し出し中':
+    case '貸出中':
       return '#dc143c'
     case '借りている':
       return '#d3d3d3'
-    case '貸し出し可能':
+    case '貸出可能':
       return '#adff2f'
     default:
       return 'primary.dark'
@@ -35,7 +36,7 @@ export const BookCard = (props: Books) => {
         {books.map((book, index) => (
           <Grid item key={index} xs={12} sm={6} md={4} lg={3}>
             <Card sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }}>
-              <CardMedia sx={{ height: 240 }} image="/images/no-image.jpg" title="no image" />
+              <CardMedia sx={{ height: 240 }} image={book.imageUrl} title="no image" />
               <CardContent>
                 <Typography gutterBottom variant="h6" component="h2">
                   {book.title}
@@ -47,7 +48,7 @@ export const BookCard = (props: Books) => {
                     sx={{
                       width: 120,
                       height: 40,
-                      backgroundColor: stateBackgroundColor(book.state),
+                      backgroundColor: statusBackgroundColor(book.status),
                     }}
                     borderRadius={16}
                     textAlign="center"
@@ -57,10 +58,10 @@ export const BookCard = (props: Books) => {
                     p={1}
                     m={1}
                   >
-                    {book.state}
+                    {book.status}
                   </Box>
 
-                  {book.state === '予約中' ? (
+                  {book.status === '予約中' ? (
                     <Box component="span" display="block" p={1} height={30}>
                       {book.date}から
                     </Box>
