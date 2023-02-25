@@ -1,6 +1,8 @@
 import { Grid } from '@mui/material'
 import { MainLayout } from '@/layouts/MainLayout'
 import { BookCard } from '@/components/BookCard'
+import { trpc } from '@/utils/trpc'
+import { useEffect } from 'react'
 
 const Books_Infomation = [
   { title: 'プログラミング言語Ruby', state: '貸し出し中', date: '2023-02-19', href: '/books/1' },
@@ -10,6 +12,12 @@ const Books_Infomation = [
 ]
 
 export default function Books() {
+  const getBooks = trpc.book.getBooks.useQuery()
+
+  useEffect(() => {
+    console.debug(getBooks.data)
+  }, [getBooks])
+
   return (
     <MainLayout>
       <Grid container spacing={2}>
