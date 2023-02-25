@@ -39,23 +39,24 @@ export const bookRouter = router({
           email: userEmail,
         },
       })
-      for (const book of booksInfo) {
+      const books = booksInfo.map((book) => {
         if (book.lendings.length === 0) {
           return { status: '貸出可能', title: book.title, imageUrl: book.imageUrl }
         } else if (book.lendings.length > 0) {
           if (userInfo?.id === null) {
             return { status: '貸出中', title: book.title, imageUrl: book.imageUrl }
           } else {
-            return { status: '現在借りています', title: book.title, imageUrl: book.imageUrl }
+            return { status: '借りている', title: book.title, imageUrl: book.imageUrl }
           }
         } else if (book.reservetions.length > 0) {
           if (userInfo?.id !== null) {
-            return { status: '予約しています', title: book.title, imageUrl: book.imageUrl }
+            return { status: '予約中', title: book.title, imageUrl: book.imageUrl }
           }
-        } else {
-          return { status: '値が見つかりません' }
         }
-      }
+        return { status: '値が見つかりません' }
+      })
+
+      return books
     } catch {
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
