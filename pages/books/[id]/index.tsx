@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/router'
 import { MainLayout } from '@/layouts/MainLayout'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -17,10 +18,15 @@ import { trpc } from '@/utils/trpc'
 import { useSnackbar } from '@/components/providers/GlobalSnackbar'
 
 export default function Book() {
+  const router = useRouter()
+  const bookId = router.query.id !== undefined && typeof router.query.id !== 'object' ? router.query.id : ''
+
   // 貸出中、予約中の日付を取得する
-  const events = trpc.book.getEvent.useQuery({
-    bookId: 'clejbqfs5000auquc5qkzjfgl',
+  const eventInfo = trpc.book.getEvent.useQuery({
+    bookId: bookId,
   })
+  // const {bookInfo, events} = getEventInfo.data
+
   // 貸出の登録処理
   const lendCreate = trpc.lending.create.useMutation()
   const reservationCreate = trpc.reservation.create.useMutation()
@@ -50,7 +56,7 @@ export default function Book() {
       isCanSubmit = false
       message = '貸出日または予約日が設定されていません'
       return { isCanSubmit: isCanSubmit, message: message }
-    } else if (events.data === undefined) {
+    } else if (eventInfo.data?.events === undefined) {
       isCanSubmit = false
       message = 'イベントが取得されていません'
       return { isCanSubmit: isCanSubmit, message: message }
@@ -61,7 +67,7 @@ export default function Book() {
     const selectedStartDate = dayjs(startAt).format('YYYY-MM-DD')
     const selectedEndDate = dayjs(endAt).format('YYYY-MM-DD')
 
-    for (const event of events.data) {
+    for (const event of eventInfo.data?.events) {
       // []でbetweenStartDateとbetweenEndDateの日付が含まれるようにしている
       const isStartDate = dayjs(selectedStartDate).isBetween(event.start, event.end, 'day', '()')
       const isEndDate = dayjs(selectedEndDate).isBetween(event.start, event.end, 'day', '()')
@@ -83,7 +89,7 @@ export default function Book() {
     const endDate = endAt!.toString()
     lendCreate.mutate(
       {
-        bookId: 'clejbqfs5000auquc5qkzjfgl',
+        bookId: bookId,
         startAt: startDate,
         endAt: endDate,
       },
@@ -105,7 +111,7 @@ export default function Book() {
     const endDate = endAt!.toString()
     reservationCreate.mutate(
       {
-        bookId: 'clejbqfs5000auquc5qkzjfgl',
+        bookId: bookId,
         startAt: startDate,
         endAt: endDate,
       },
@@ -136,7 +142,7 @@ export default function Book() {
       <Grid item xs={12}>
         <Breadcrumbs>
           <Link href="/books">本一覧</Link>
-          <Typography color="text.primary">ここに本のタイトルが入ります</Typography>
+          <Typography color="text.primary">{eventInfo.data?.title}</Typography>
         </Breadcrumbs>
       </Grid>
       <Grid item xs={12} lg={4}>
@@ -156,7 +162,7 @@ export default function Book() {
         <div className={styles.margin}>
           <div className={styles.margin}>
             <Typography component="h2" variant="h5">
-              プログラミング言語Ruby
+              {eventInfo.data?.title}
             </Typography>
 
             <Chip label="貸出可能" color="success" />
@@ -214,7 +220,7 @@ export default function Book() {
             </div>
           </div>
         </div>
-        <FullCalendar plugins={[dayGridPlugin]} initialView="dayGridMonth" events={events.data} />
+        <FullCalendar plugins={[dayGridPlugin]} initialView="dayGridMonth" events={eventInfo.data?.events} />
       </Grid>
     </MainLayout>
   )

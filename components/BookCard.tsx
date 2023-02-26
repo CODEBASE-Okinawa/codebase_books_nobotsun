@@ -71,7 +71,7 @@ export const BookCard = (props: Books) => {
                     </Box>
                   )}
 
-                  <Link href="/books/1">
+                  <Link href={book.href !== undefined ? book.href : ''}>
                     <Button>詳細</Button>
                   </Link>
                 </div>
