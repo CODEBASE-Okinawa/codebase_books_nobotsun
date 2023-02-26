@@ -25,7 +25,6 @@ export const bookRouter = router({
           },
         },
       })
-      console.debug(booksInfo)
 
       /**
        * - 貸出中 = lendingsの値があれば貸出中
