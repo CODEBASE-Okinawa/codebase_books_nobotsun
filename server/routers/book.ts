@@ -1,14 +1,27 @@
-import { z } from 'zod'
+import { string, z } from 'zod'
 import { protectedProcedure, router } from '../trpc'
 import prisma from '@/lib/prisma'
 import { TRPCError } from '@trpc/server'
 import dayjs from 'dayjs'
+
+const eventInfo = z.object({
+  title: z.string(),
+  imageUrl: z.string(),
+  events: z.array(
+    z.object({
+      title: z.string(),
+      start: z.string(),
+      end: z.string(),
+    })
+  ),
+})
 
 export const bookRouter = router({
   getBooks: protectedProcedure.query(async ({ ctx }) => {
     try {
       const booksInfo = await prisma.book.findMany({
         select: {
+          id: true,
           title: true,
           imageUrl: true,
           lendings: {
@@ -39,17 +52,18 @@ export const bookRouter = router({
         },
       })
       const books = booksInfo.map((book) => {
+        const href = '/books/'
         if (book.lendings.length === 0) {
-          return { status: '貸出可能', title: book.title, imageUrl: book.imageUrl }
+          return { status: '貸出可能', title: book.title, imageUrl: book.imageUrl, href: href + book.id }
         } else if (book.lendings.length > 0) {
           if (userInfo?.id === null) {
-            return { status: '貸出中', title: book.title, imageUrl: book.imageUrl }
+            return { status: '貸出中', id: book.id, title: book.title, imageUrl: book.imageUrl, href: href + book.id }
           } else {
-            return { status: '借りている', title: book.title, imageUrl: book.imageUrl }
+            return { status: '借りている', id: book.id, title: book.title, imageUrl: book.imageUrl, href: href + book.id }
           }
         } else if (book.reservetions.length > 0) {
           if (userInfo?.id !== null) {
-            return { status: '予約中', title: book.title, imageUrl: book.imageUrl }
+            return { status: '予約中', id: book.id, title: book.title, imageUrl: book.imageUrl, href: href + book.id }
           }
         }
         return { status: '値が見つかりません' }
@@ -70,15 +84,7 @@ export const bookRouter = router({
         bookId: z.string(),
       })
     )
-    .output(
-      z.array(
-        z.object({
-          title: z.string(),
-          start: z.string(),
-          end: z.string(),
-        })
-      )
-    )
+    .output(eventInfo)
     .query(async ({ input }) => {
       try {
         const lendingAndReservationEvent = await prisma.book.findMany({
@@ -86,6 +92,8 @@ export const bookRouter = router({
             id: input.bookId,
           },
           select: {
+            title: true,
+            imageUrl: true,
             lendings: {
               select: {
                 startAt: true,
@@ -102,7 +110,14 @@ export const bookRouter = router({
         })
 
         // outputと同じデータ構造に変更する処理
+        let bookTifle = ''
+        let bookImageUrl = ''
+        for (const event of lendingAndReservationEvent) {
+          bookTifle = event.title
+          bookImageUrl = event.imageUrl
+        }
         const events = []
+
         for (const event of lendingAndReservationEvent) {
           for (const lending of event.lendings) {
             const formatedStartAt = dayjs(lending.startAt).format('YYYY-MM-DD')
@@ -116,7 +131,12 @@ export const bookRouter = router({
           }
         }
         console.debug(events)
-        return events
+        const eventInfo = {
+          title: bookTifle,
+          imageUrl: bookImageUrl,
+          events: events,
+        }
+        return eventInfo
       } catch {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
@@ -125,3 +145,4 @@ export const bookRouter = router({
       }
     }),
 })
+// type EventInfo = z.infer<typeof EventInfo>
