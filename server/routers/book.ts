@@ -5,6 +5,64 @@ import { TRPCError } from '@trpc/server'
 import dayjs from 'dayjs'
 
 export const bookRouter = router({
+  getBooks: protectedProcedure.query(async ({ ctx }) => {
+    try {
+      const booksInfo = await prisma.book.findMany({
+        select: {
+          title: true,
+          imageUrl: true,
+          lendings: {
+            select: {
+              startAt: true,
+              endAt: true,
+            },
+          },
+          reservetions: {
+            select: {
+              startAt: true,
+              endAt: true,
+            },
+          },
+        },
+      })
+
+      /**
+       * - 貸出中 = lendingsの値があれば貸出中
+       * - 予約中 = 自分が予約しているかどうか
+       * - 借りている =  自分が借りているかどうか
+       * - 貸出可能 = lengingsに値がなければ貸出可能
+       */
+      const userEmail = ctx.session.user?.email !== null && ctx.session.user?.email !== undefined ? ctx.session.user.email : ''
+      const userInfo = await prisma.user.findFirst({
+        where: {
+          email: userEmail,
+        },
+      })
+      const books = booksInfo.map((book) => {
+        if (book.lendings.length === 0) {
+          return { status: '貸出可能', title: book.title, imageUrl: book.imageUrl }
+        } else if (book.lendings.length > 0) {
+          if (userInfo?.id === null) {
+            return { status: '貸出中', title: book.title, imageUrl: book.imageUrl }
+          } else {
+            return { status: '借りている', title: book.title, imageUrl: book.imageUrl }
+          }
+        } else if (book.reservetions.length > 0) {
+          if (userInfo?.id !== null) {
+            return { status: '予約中', title: book.title, imageUrl: book.imageUrl }
+          }
+        }
+        return { status: '値が見つかりません' }
+      })
+
+      return books
+    } catch {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: '本の一覧を取得できませんでした。もう一度お試しください。',
+      })
+    }
+  }),
   // 本の貸し出し、予約ずみ一覧を取得
   getEvent: protectedProcedure
     .input(

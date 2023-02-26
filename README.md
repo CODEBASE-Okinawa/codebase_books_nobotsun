@@ -20,6 +20,8 @@ npx prisma studio
 
 ### DB を再作成し、seed を実行する
 
-npx prisma migrate reset  
-npx prisma db push  
-npx prisma db seed  
+npx prisma migrate reset
+
+npx prisma db push
+
+npx prisma db seed
