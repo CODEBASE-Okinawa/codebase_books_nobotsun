@@ -7,9 +7,9 @@ export type Books = {
 
 export type BookInfo = {
   title?: string
-  status: string
+  status?: string
   imageUrl?: string
-  date?: string
+  start?: string
   href?: string
 }
 
@@ -63,7 +63,7 @@ export const BookCard = (props: Books) => {
 
                   {book.status === '予約中' ? (
                     <Box component="span" display="block" p={1} height={30}>
-                      {book.date}から
+                      {book.start}から
                     </Box>
                   ) : (
                     <Box component="span" display="block" p={1} height={30}>
